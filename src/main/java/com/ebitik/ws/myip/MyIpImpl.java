@@ -16,9 +16,22 @@ public class MyIpImpl implements MyIp {
 	@Override
 	public String sayMyIp() {
 		MessageContext mc = wsContext.getMessageContext();
-	    HttpServletRequest req = (HttpServletRequest)mc.get(MessageContext.SERVLET_REQUEST); 
-	    System.out.println("Client IP = " + req.getRemoteAddr()); 
-		return "Your IP is:  " + req.getRemoteAddr();
+	    HttpServletRequest req = (HttpServletRequest)mc.get(MessageContext.SERVLET_REQUEST);
+	    String clientIp = getClientIp(req);
+		return "Your IP is: " + clientIp;
 	}
+	
+	private String getClientIp(HttpServletRequest request) {
+        String remoteAddr = "";
+
+        if (request != null) {
+            remoteAddr = request.getHeader("X-FORWARDED-FOR");
+            if (remoteAddr == null || "".equals(remoteAddr)) {
+                remoteAddr = request.getRemoteAddr();
+            }
+        }
+
+        return remoteAddr;
+    }
 
 }
